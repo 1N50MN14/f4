@@ -1,3 +1,6 @@
+## 1.0.2
+- dartfmt files
+
 ## 1.0.1
 - Minor README fix
 
