@@ -1,4 +1,4 @@
-/// Future helper methods & classes. 
+/// Future helper methods & classes.
 library f4;
 
 export 'src/static.dart';

@@ -3,9 +3,9 @@ import 'package:meta/meta.dart';
 import 'abort.dart';
 import 'reflect.dart';
 
-class Task
-{
-  @required Function _func;
+class Task {
+  @required
+  Function _func;
 
   AbortSignal _abortSignal;
 
@@ -19,26 +19,24 @@ class Task
 
   bool isSerial = false;
 
-  Task(Function func, {AbortSignal abortSignal, Map<Object, dynamic> meta })
-    : _func = func
-  {
+  Task(Function func, {AbortSignal abortSignal, Map<Object, dynamic> meta})
+      : _func = func {
     _cmp = Completer();
 
-    abortSignal != null ? setSignal(abortSignal)  : null;
+    abortSignal != null ? setSignal(abortSignal) : null;
 
     _meta = meta ?? {};
   }
 
-  Future run([List argp, Map<String, dynamic> argn]) async
-  {
+  Future run([List argp, Map<String, dynamic> argn]) async {
     argp ??= [];
-    
-    Map<Symbol, dynamic> _argn = argn == null || argn.isEmpty
-      ? {}
-      : Map.fromEntries(argn.entries.map((e)=>MapEntry(Symbol(e.key),e.value)));
 
-    if (!completed)
-    {
+    Map<Symbol, dynamic> _argn = argn == null || argn.isEmpty
+        ? {}
+        : Map.fromEntries(
+            argn.entries.map((e) => MapEntry(Symbol(e.key), e.value)));
+
+    if (!completed) {
       response = await ReflectFuture(Function.apply(_func, argp, _argn), _meta);
 
       !completed ? _cmp.complete(response) : null;
@@ -47,13 +45,11 @@ class Task
     return _cmp.future;
   }
 
-  void setSignal([AbortSignal signal])
-  {
-    if (signal != null)
-    {
-    _abortSignal = signal;
+  void setSignal([AbortSignal signal]) {
+    if (signal != null) {
+      _abortSignal = signal;
 
-    _abortSignal.addCompleter(_cmp);
+      _abortSignal.addCompleter(_cmp);
     }
   }
 
