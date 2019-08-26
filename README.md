@@ -25,8 +25,8 @@ import 'package:f4/f4.dart';
 
 main() async
 {
-  final r = await F4.map([1, 2, 3, 4], (int i)=>Future.value(i), concurrency:2);
-  print(r); //[1, 2, 3, 4]
+  final r = await F4.map([1,2,3,4], (int i)=>Future.value(i), concurrency:2);
+  print(r); //[1,2,3,4]
 }
 ```
 
