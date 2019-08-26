@@ -1,6 +1,6 @@
 name: f4
-description: A Future with some added sugar.
-version: 0.0.1
+description: A set of Future helper functions (mostly) compatible with Node.js counterpart Promise libraries such as Bluebird. Supports concurrency & cancellation.
+version: 1.0.0
 homepage: https://github.com/1N50MN14/f4
 author: 1N50MN14 <ayman.mackouly@gmail.com>
 
