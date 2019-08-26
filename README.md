@@ -39,3 +39,6 @@ Complete usage example under [/example][example].
 Please file feature requests and bugs at the [issue tracker][tracker].
 
 [tracker]: https://github.com/1N50MN14/f4/issues
+
+## License
+MIT
