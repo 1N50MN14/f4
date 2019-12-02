@@ -1,3 +1,6 @@
+## 1.0.3
+- Iterable should be Iterable<Function> in forEach constructor
+
 ## 1.0.2
 - dartfmt files
 

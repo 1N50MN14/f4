@@ -24,7 +24,7 @@ class F4 {
   ///   ()=>Future.value(2)
   /// ]);
   /// ```
-  static Future forEach(Iterable fns, {AbortSignal abortSignal}) =>
+  static Future forEach(Iterable<Function> fns, {AbortSignal abortSignal}) =>
       ForEach(fns, abortSignal: abortSignal).run();
 
   /// Iterate a list of Futures while passing through results.
