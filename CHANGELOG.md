@@ -1,5 +1,8 @@
+## 1.0.4
+- try catch to resolve reflectables because of https://github.com/flutter/flutter/issues/33427
+
 ## 1.0.3
-- Iterable should be Iterable<Function> in forEach constructor
+- Iterable should be Iterable Function in forEach constructor
 
 ## 1.0.2
 - dartfmt files
