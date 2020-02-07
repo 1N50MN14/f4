@@ -1,3 +1,6 @@
+## 1.0.5
+- Ignore empty future lists
+
 ## 1.0.4
 - try catch to resolve reflectables because of https://github.com/flutter/flutter/issues/33427
 

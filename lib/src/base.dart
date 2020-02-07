@@ -21,7 +21,9 @@ abstract class Base {
   Iterable<Iterable<Task>> _chunks;
 
   Base(List<dynamic> tasks, {AbortSignal abortSignal, int concurrency})
-      : assert(tasks.isNotEmpty) {
+  {
+    tasks ??= [];
+   
     _abortSignal = abortSignal;
 
     _concurrency =
@@ -191,8 +193,7 @@ class Props extends Base {
   Map<dynamic, dynamic> _resp;
 
   Props(Map<Object, dynamic> m, {AbortSignal abortSignal, int concurrency})
-      : assert(m.isNotEmpty),
-        _resp = Map.fromEntries(m.keys.map((k) => MapEntry(k, null))),
+  : _resp = Map.fromEntries(m.keys.map((k) => MapEntry(k, null))),
         super(
             m.keys.fold(
                 [],
