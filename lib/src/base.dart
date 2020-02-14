@@ -17,7 +17,7 @@ abstract class Base {
 
   Completer _completer = Completer();
 
-  final bool cancelOnError;
+  bool _cancelOnError;
 
   @required
   Iterable<Iterable<Task>> _chunks;
@@ -25,10 +25,12 @@ abstract class Base {
   Base(List<dynamic> tasks, {
     AbortSignal abortSignal,
     int concurrency,
-    this.cancelOnError = true
+    bool cancelOnError
   })
   {
     tasks ??= [];
+
+    _cancelOnError = cancelOnError == null ? true : cancelOnError;
 
     _abortSignal = abortSignal;
 
@@ -65,7 +67,7 @@ abstract class Base {
 
   Future run() {
     stream.listen(_onData,
-        onDone: _onDone, onError: _completeError, cancelOnError: cancelOnError);
+        onDone: _onDone, onError: _completeError, cancelOnError: _cancelOnError);
 
     return _completer.future;
   }
