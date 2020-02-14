@@ -1,3 +1,6 @@
+## 1.0.7
+- default `cancelOnError` to `true`
+
 ## 1.0.6
 - Add optional `cancelOnError`
 
