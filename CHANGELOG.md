@@ -1,4 +1,7 @@
 ## 1.0.5
+- Add optional `cancelOnError`
+
+## 1.0.5
 - Ignore empty future lists
 
 ## 1.0.4

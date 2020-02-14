@@ -24,8 +24,9 @@ class F4 {
   ///   ()=>Future.value(2)
   /// ]);
   /// ```
-  static Future forEach(Iterable<Function> fns, {AbortSignal abortSignal}) =>
-      ForEach(fns, abortSignal: abortSignal).run();
+  static Future forEach(Iterable<Function> fns, {AbortSignal abortSignal,
+    bool cancelOnError}) => ForEach(fns, abortSignal: abortSignal,
+      cancelOnError:cancelOnError).run();
 
   /// Iterate a list of Futures while passing through results.
   /// ```
@@ -35,8 +36,9 @@ class F4 {
   ///   (int r)=>Future.value(r*2)
   /// ]);
   /// ```
-  static Future chain(Iterable<Function> fns, {AbortSignal abortSignal}) =>
-      Chain(fns, abortSignal: abortSignal).run();
+  static Future chain(Iterable<Function> fns, {AbortSignal abortSignal,
+    bool cancelOnError}) => Chain(fns, abortSignal: abortSignal,
+      cancelOnError: cancelOnError).run();
 
   /// Run a single Future.
   /// ```
@@ -55,17 +57,19 @@ class F4 {
   /// ],
   /// concurrency:2);
   /// ```
-  static Future all(Iterable<Function> fns,
-          {AbortSignal abortSignal, int concurrency}) =>
-      All(fns, abortSignal: abortSignal, concurrency: concurrency).run();
+  static Future all(Iterable<Function> fns,{AbortSignal abortSignal,
+    int concurrency, bool cancelOnError}) =>
+      All(fns, abortSignal: abortSignal, concurrency: concurrency,
+        cancelOnError:cancelOnError).run();
 
   /// Conccurently generate & iterate futures (output list is ordered).
   /// ```
   /// await F4.map([1,2,3], (int i)=>Future.value(i), concurrency:2);
   /// ```
-  static Future map(Iterable<Object> args, Function f,
-          {AbortSignal abortSignal, int concurrency}) =>
-      $Map(args, f, abortSignal: abortSignal, concurrency: concurrency).run();
+  static Future map(Iterable<Object> args, Function f, {AbortSignal abortSignal,
+    int concurrency, bool cancelOnError}) =>
+      $Map(args, f, abortSignal: abortSignal, concurrency: concurrency,
+        cancelOnError:cancelOnError).run();
 
   /// Conccurently iterate futures from Map properties (output Map is ordered).
   /// ```
@@ -76,9 +80,10 @@ class F4 {
   ///   'c': ()=>Future.value(31),
   /// }, concurrency:2);
   /// ```
-  static Future props(Map<Object, dynamic> m,
-          {AbortSignal abortSignal, int concurrency}) =>
-      Props(m, abortSignal: abortSignal, concurrency: concurrency).run();
+  static Future props(Map<Object, dynamic> m, {AbortSignal abortSignal,
+    int concurrency, bool cancelOnError}) =>
+      Props(m, abortSignal: abortSignal, concurrency: concurrency,
+        cancelOnError:cancelOnError).run();
 
   /// Create a Future from scratch.
   /// ```

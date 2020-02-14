@@ -17,13 +17,19 @@ abstract class Base {
 
   Completer _completer = Completer();
 
+  final bool cancelOnError;
+
   @required
   Iterable<Iterable<Task>> _chunks;
 
-  Base(List<dynamic> tasks, {AbortSignal abortSignal, int concurrency})
+  Base(List<dynamic> tasks, {
+    AbortSignal abortSignal,
+    int concurrency,
+    this.cancelOnError = true
+  })
   {
     tasks ??= [];
-   
+
     _abortSignal = abortSignal;
 
     _concurrency =
@@ -59,7 +65,7 @@ abstract class Base {
 
   Future run() {
     stream.listen(_onData,
-        onDone: _onDone, onError: _completeError, cancelOnError: false);
+        onDone: _onDone, onError: _completeError, cancelOnError: cancelOnError);
 
     return _completer.future;
   }
@@ -115,8 +121,9 @@ abstract class Base {
 }
 
 class ForEach extends Base {
-  ForEach(Iterable<Function> fns, {AbortSignal abortSignal})
-      : super(fns.toList(), abortSignal: abortSignal, concurrency: 1);
+  ForEach(Iterable<Function> fns, {AbortSignal abortSignal, bool cancelOnError})
+    : super(fns.toList(), abortSignal: abortSignal, concurrency: 1,
+      cancelOnError:cancelOnError);
 }
 
 class Chain extends Base {
@@ -124,8 +131,9 @@ class Chain extends Base {
 
   Object _resp;
 
-  Chain(Iterable<Function> fns, {AbortSignal abortSignal})
-      : super(fns.toList(), abortSignal: abortSignal, concurrency: 1);
+  Chain(Iterable<Function> fns, {AbortSignal abortSignal, bool cancelOnError})
+    : super(fns.toList(), abortSignal: abortSignal, cancelOnError: cancelOnError,
+        concurrency: 1);
 
   @override
   void _onData(data) => _resp = data.value;
@@ -153,9 +161,11 @@ class Chain extends Base {
 class All extends Base {
   List _resp;
 
-  All(Iterable<Function> fns, {AbortSignal abortSignal, int concurrency})
+  All(Iterable<Function> fns, {AbortSignal abortSignal, int concurrency,
+    bool cancelOnError})
       : _resp = List(fns.length),
-        super(fns.toList(), abortSignal: abortSignal, concurrency: concurrency);
+      super(fns.toList(), abortSignal: abortSignal, concurrency: concurrency,
+        cancelOnError:cancelOnError);
 
   @override
   void _onData(data) => _resp[data.meta['index']] = data.value;
@@ -167,20 +177,22 @@ class All extends Base {
 class $Map extends Base {
   List _resp;
 
-  $Map(Iterable<Object> args, Function f,
-      {AbortSignal abortSignal, int concurrency})
-      : _resp = List(args.length),
-        super(
-            ((List _args, Function _f) sync* {
-              for (int i = 0; i < _args.length; i++) {
-                yield () async {
-                  return await _f(_args[i]);
-                };
-              }
-            })(args, f)
-                .toList(),
-            abortSignal: abortSignal,
-            concurrency: concurrency);
+  $Map(Iterable<Object> args, Function f, {AbortSignal abortSignal,
+    int concurrency, bool cancelOnError})
+  : _resp = List(args.length),
+     super(
+      ((List _args, Function _f) sync* {
+        for (int i = 0; i < _args.length; i++) {
+          yield () async {
+            return await _f(_args[i]);
+          };
+        }
+      })(args, f)
+          .toList(),
+      abortSignal: abortSignal,
+      concurrency: concurrency,
+      cancelOnError:cancelOnError
+    );
 
   @override
   void _onData(data) => _resp[data.meta['index']] = data.value;
@@ -192,16 +204,19 @@ class $Map extends Base {
 class Props extends Base {
   Map<dynamic, dynamic> _resp;
 
-  Props(Map<Object, dynamic> m, {AbortSignal abortSignal, int concurrency})
+  Props(Map<Object, dynamic> m, {AbortSignal abortSignal, int concurrency,
+    bool cancelOnError})
   : _resp = Map.fromEntries(m.keys.map((k) => MapEntry(k, null))),
-        super(
-            m.keys.fold(
-                [],
-                (c, k) => c
-                  ..add((m[k] is Task ? m[k] : Task(m[k])
-                    ..meta['index'] = k))),
-            abortSignal: abortSignal,
-            concurrency: concurrency);
+    super(
+    m.keys.fold(
+        [],
+        (c, k) => c
+          ..add((m[k] is Task ? m[k] : Task(m[k])
+            ..meta['index'] = k))),
+    abortSignal: abortSignal,
+    concurrency: concurrency,
+    cancelOnError:cancelOnError
+  );
 
   @override
   void _onData(data) => _resp[data.meta['index']] = data.value;
