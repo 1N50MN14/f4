@@ -75,7 +75,7 @@ void main() {
 
     test('forEach: Serially run a list of futures',
     () async {
-      final v = await F4.forEach(list);
+      final v = await F4.forEach(list, cancelOnError: true);
       print('output: $v');
       expect(v, null);
     });
