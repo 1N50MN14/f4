@@ -59,9 +59,15 @@ abstract class Base {
     ..meta['index'] = t.meta['index'] ?? id
     ..setSignal(_abortSignal);
 
-  Iterable<Iterable<Task>> _chunkTasks(Iterable<Task> t, int s) =>
-      Iterable.generate((t.length / s).ceil(),
-          (i) => t.skip(i * s).take(s == 1 ? 1 : i * s + s));
+  Iterable<Iterable<Task>> _chunkTasks(Iterable<Task> t, int s)
+  {
+    if(t.isEmpty || s == 0) {
+      return Iterable<Iterable<Task>>.empty();
+    }
+
+    return Iterable.generate((t.length / s).ceil(),
+      (i) => t.skip(i * s).take(s == 1 ? 1 : i * s + s));
+  }
 
   Future _runTask(Task t) async => await t.run();
 

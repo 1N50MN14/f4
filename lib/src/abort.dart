@@ -55,13 +55,11 @@ class AbortController {
 
   Completer _abortCompleter;
 
-  Function _onAbort;
-
   /// Trigger abort signal.
   /// ```
   /// abortController.abort('cancel message')
   /// ```
-  AbortController({Function onAbort}) : _onAbort = onAbort {
+  AbortController({Function onAbort}) {
     _abortCompleter = Completer();
 
     _signal = AbortSignal(onAbort);
