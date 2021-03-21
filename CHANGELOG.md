@@ -1,3 +1,6 @@
+## 1.0.8
+- handle empty iterables
+
 ## 1.0.7
 - default `cancelOnError` to `true`
 
