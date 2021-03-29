@@ -171,7 +171,7 @@ class All extends Base {
 
   All(Iterable<Function> fns, {AbortSignal abortSignal, int concurrency,
     bool cancelOnError})
-      : _resp = List(fns.length),
+      : _resp = List.filled(fns.length, []),
       super(fns.toList(), abortSignal: abortSignal, concurrency: concurrency,
         cancelOnError:cancelOnError);
 
@@ -187,7 +187,7 @@ class $Map extends Base {
 
   $Map(Iterable<Object> args, Function f, {AbortSignal abortSignal,
     int concurrency, bool cancelOnError})
-  : _resp = List(args.length),
+  : _resp = List.filled(args.length, []),
      super(
       ((List _args, Function _f) sync* {
         for (int i = 0; i < _args.length; i++) {
