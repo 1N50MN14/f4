@@ -1,3 +1,9 @@
+## 1.1.1
+- Null safety
+
+## 1.1.0
+- Update deps
+
 ## 1.0.9
 - List.filled() instead of []
 

@@ -8,33 +8,33 @@ import 'error.dart';
 /// ```
 ///
 class AbortSignal {
-  AbortError _abortError;
+  AbortError? _abortError;
 
-  List<Completer> completers = [];
+  List<Completer?> completers = [];
 
-  Function _onAbort;
+  Function? _onAbort;
 
-  AbortSignal([Function onAbort]) : _onAbort = onAbort;
+  AbortSignal([Function? onAbort]) : _onAbort = onAbort;
 
   /// @nodoc
-  void addCompleter(Completer c) => aborted
+  void addCompleter(Completer? c) => aborted
       ? _complete(c)
       : !completers.contains(c) ? completers.add(c) : null;
 
   /// @nodoc
-  void trigger(String message) {
+  void trigger(String? message) {
     _abortError = AbortError(message: message ?? '');
 
     completers.forEach(_complete);
 
     completers.clear();
 
-    _onAbort != null ? Function.apply(_onAbort, [_abortError]) : null;
+    _onAbort != null ? Function.apply(_onAbort!, [_abortError]) : null;
   }
 
-  void _complete(Completer cmp) => !cmp.isCompleted
+  void _complete(Completer? cmp) => !cmp!.isCompleted
       ? _onAbort == null
-          ? cmp.complete(ReflectFuture(Future.error(_abortError)))
+          ? cmp.complete(ReflectFuture(Future.error(_abortError!)))
           : cmp.complete(ReflectFuture(Future.value(null)))
       : null;
 
@@ -42,7 +42,7 @@ class AbortSignal {
 
   bool get aborted => _abortError != null;
 
-  AbortError get error => _abortError;
+  AbortError? get error => _abortError;
 }
 
 /// Abort controller that optionally receives `onAbort` callback in which case
@@ -51,25 +51,25 @@ class AbortSignal {
 /// final ctl = AbortController(onAbort:(e)=>print('onAbort: $e'));
 /// ```
 class AbortController {
-  AbortSignal _signal;
+  AbortSignal? _signal;
 
-  Completer _abortCompleter;
+  late Completer _abortCompleter;
 
   /// Trigger abort signal.
   /// ```
   /// abortController.abort('cancel message')
   /// ```
-  AbortController({Function onAbort}) {
+  AbortController({Function? onAbort}) {
     _abortCompleter = Completer();
 
     _signal = AbortSignal(onAbort);
   }
 
-  void abort([String message]) {
-    !signal.aborted ? signal.trigger(message) : null;
+  void abort([String? message]) {
+    !signal!.aborted ? signal!.trigger(message) : null;
 
     !_abortCompleter.isCompleted ? _abortCompleter.complete() : null;
   }
 
-  AbortSignal get signal => _signal;
+  AbortSignal? get signal => _signal;
 }

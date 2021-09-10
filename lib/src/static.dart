@@ -13,7 +13,7 @@ class F4 {
   /// print(r.isError ? r.error : r.value);
   /// ```
   static Future<ReflectedFuture> reflect(FutureOr f,
-          [Map<Object, dynamic> m]) =>
+          [Map<Object, dynamic>? m]) =>
       ReflectFuture(f, m);
 
   /// Iterate through a list of Futures one by one.
@@ -24,8 +24,8 @@ class F4 {
   ///   ()=>Future.value(2)
   /// ]);
   /// ```
-  static Future forEach(Iterable<Function> fns, {AbortSignal abortSignal,
-    bool cancelOnError}) => ForEach(fns, abortSignal: abortSignal,
+  static Future forEach(Iterable<Function> fns, {AbortSignal? abortSignal,
+    bool? cancelOnError}) => ForEach(fns, abortSignal: abortSignal,
       cancelOnError:cancelOnError).run();
 
   /// Iterate a list of Futures while passing through results.
@@ -36,15 +36,15 @@ class F4 {
   ///   (int r)=>Future.value(r*2)
   /// ]);
   /// ```
-  static Future chain(Iterable<Function> fns, {AbortSignal abortSignal,
-    bool cancelOnError}) => Chain(fns, abortSignal: abortSignal,
+  static Future chain(Iterable<Function> fns, {AbortSignal? abortSignal,
+    bool? cancelOnError}) => Chain(fns, abortSignal: abortSignal,
       cancelOnError: cancelOnError).run();
 
   /// Run a single Future.
   /// ```
   /// await F4.one(()=>Future.value(1));
   /// ```
-  static Future one(Function fn, {AbortSignal abortSignal}) =>
+  static Future one(Function fn, {AbortSignal? abortSignal}) =>
       Chain([fn], abortSignal: abortSignal).run();
 
   /// Conccurently iterate futures (output list is ordered).
@@ -57,8 +57,8 @@ class F4 {
   /// ],
   /// concurrency:2);
   /// ```
-  static Future all(Iterable<Function> fns,{AbortSignal abortSignal,
-    int concurrency, bool cancelOnError}) =>
+  static Future all(Iterable<Function> fns,{AbortSignal? abortSignal,
+    int? concurrency, bool? cancelOnError}) =>
       All(fns, abortSignal: abortSignal, concurrency: concurrency,
         cancelOnError:cancelOnError).run();
 
@@ -66,8 +66,8 @@ class F4 {
   /// ```
   /// await F4.map([1,2,3], (int i)=>Future.value(i), concurrency:2);
   /// ```
-  static Future map(Iterable<Object> args, Function f, {AbortSignal abortSignal,
-    int concurrency, bool cancelOnError}) =>
+  static Future map(Iterable<Object> args, Function f, {AbortSignal? abortSignal,
+    int? concurrency, bool? cancelOnError}) =>
       $Map(args, f, abortSignal: abortSignal, concurrency: concurrency,
         cancelOnError:cancelOnError).run();
 
@@ -80,8 +80,8 @@ class F4 {
   ///   'c': ()=>Future.value(31),
   /// }, concurrency:2);
   /// ```
-  static Future props(Map<Object, dynamic> m, {AbortSignal abortSignal,
-    int concurrency, bool cancelOnError}) =>
+  static Future props(Map<Object, dynamic> m, {AbortSignal? abortSignal,
+    int? concurrency, bool? cancelOnError}) =>
       Props(m, abortSignal: abortSignal, concurrency: concurrency,
         cancelOnError:cancelOnError).run();
 
@@ -90,11 +90,11 @@ class F4 {
   /// await F4.create((resolve, reject)=>()=>resolve(1));
   /// ```
   static Future create(Function fn) {
-    final Completer completer = Completer();
+    final completer = Completer();
 
     Function.apply(fn, [
       ([dynamic data]) => completer.complete(data),
-      ([Object e, StackTrace s]) =>
+      ([Object? e, StackTrace? s]) =>
           completer.completeError(e ?? RejectionError(), s)
     ]);
 

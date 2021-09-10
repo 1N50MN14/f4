@@ -1,10 +1,10 @@
 name: f4
 description: A set of Future helper functions (mostly) compatible with Node.js counterpart Promise libraries such as Bluebird. Supports concurrency & cancellation.
-version: 1.0.9
+version: 1.1.1
 homepage: https://github.com/1N50MN14/f4
 
 environment:
-  sdk: ">=2.4.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   meta: ^1.1.7

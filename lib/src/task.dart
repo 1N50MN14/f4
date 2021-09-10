@@ -5,21 +5,21 @@ import 'reflect.dart';
 
 class Task {
   @required
-  Function _func;
+  final Function? _func;
 
-  AbortSignal _abortSignal;
+  AbortSignal? _abortSignal;
 
-  Completer _cmp;
+  Completer? _cmp;
 
-  ReflectedFuture response;
+  ReflectedFuture? response;
 
-  Map<Object, dynamic> _meta;
+  Map<Object, dynamic>? _meta;
 
   bool isolate = false;
 
   bool isSerial = false;
 
-  Task(Function func, {AbortSignal abortSignal, Map<Object, dynamic> meta})
+  Task(Function? func, {AbortSignal? abortSignal, Map<Object, dynamic>? meta})
       : _func = func {
     _cmp = Completer();
 
@@ -28,36 +28,38 @@ class Task {
     _meta = meta ?? {};
   }
 
-  Future run([List argp, Map<String, dynamic> argn]) async {
+  Future run([List? argp, Map<String, dynamic>? argn]) async {
     argp ??= [];
 
-    Map<Symbol, dynamic> _argn = argn == null || argn.isEmpty
-        ? {}
-        : Map.fromEntries(
-            argn.entries.map((e) => MapEntry(Symbol(e.key), e.value)));
 
     if (!completed) {
-      response = await ReflectFuture(Function.apply(_func, argp, _argn), _meta);
+      response = await ReflectFuture(Function.apply(_func!,
+        argp, argn == null || argn.isEmpty
+        ? {}
+        : Map.fromEntries(argn.entries.map((e) => MapEntry(Symbol(e.key), e.value)))),
+      _meta);
 
-      !completed ? _cmp.complete(response) : null;
+      !completed ? _cmp!.complete(response) : null;
     }
 
-    return _cmp.future;
+    return _cmp!.future;
   }
 
-  void setSignal([AbortSignal signal]) {
+  void setSignal([AbortSignal? signal]) {
     if (signal != null) {
       _abortSignal = signal;
 
-      _abortSignal.addCompleter(_cmp);
+      _abortSignal!.addCompleter(_cmp);
     }
   }
 
-  set meta(Map<Object, dynamic> meta) => _meta = meta;
+  // ignore: unnecessary_getters_setters
+  set meta(Map<Object, dynamic>? meta) => _meta = meta;
 
-  Map<Object, dynamic> get meta => _meta;
+  // ignore: unnecessary_getters_setters
+  Map<Object, dynamic>? get meta => _meta;
 
-  bool get completed => _cmp.isCompleted;
+  bool get completed => _cmp!.isCompleted;
 
   bool get hasAbortSignal => _abortSignal != null;
 }

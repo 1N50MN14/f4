@@ -3,17 +3,15 @@ import 'dart:async';
 import 'package:f4/f4.dart';
 import 'package:test/test.dart';
 
-sleep(int pnum, {int res, int ms = 500})
+Future sleep(int pnum, {int? res, int ms = 500})
 {
-  pnum ??= 1;
-
   print('run #$pnum');
 
   return Future.delayed(Duration(milliseconds: Random().nextInt(ms) + ms))
         .then((_)=>pnum+(res ?? 0));
 }
 
-timeout(int s, Function fn)=>
+void timeout(int s, Function fn)=>
   Timer(Duration(seconds:s), ()=> Function.apply(fn, null));
 
 void main() {
@@ -21,20 +19,22 @@ void main() {
     ReflectedFuture r;
 
     final chain =
-    [
+    <Function>[
       ()=>sleep(1),
       (int res)=>sleep(2, res:res),
       (int res)=>sleep(3, res:res),
       (int res)=>sleep(4, res:res)
-    ],
-    list =
+    ];
+
+    var list =
     [
       ()=>sleep(1),
       ()=>sleep(2),
       ()=>sleep(3),
       ()=>sleep(4),
-    ],
-    props =
+    ];
+
+    var props =
     {
       'a': ()=>sleep(1),
       'b': ()=>sleep(2),

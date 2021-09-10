@@ -2,7 +2,7 @@ import 'dart:async' show Future, FutureOr;
 
 /// @nodoc
 Future<ReflectedFuture> ReflectFuture(FutureOr f,
-    [Map<Object, dynamic> meta]) async
+    [Map<Object, dynamic>? meta]) async
 {
   if (f is Future)
   {
@@ -21,11 +21,11 @@ Future<ReflectedFuture> ReflectFuture(FutureOr f,
 class ReflectedFuture {
   final dynamic error;
 
-  final StackTrace stackTrace;
+  final StackTrace? stackTrace;
 
   final dynamic value;
 
-  final Map<Object, dynamic> meta;
+  final Map<Object, dynamic>? meta;
 
   ReflectedFuture({this.value, this.error, this.stackTrace, this.meta});
 
@@ -38,5 +38,5 @@ class ReflectedFuture {
         meta == null ? '' : 'meta:$meta'
       ].join(' ');
 
-  bool get isError => this.error != null;
+  bool get isError => error != null;
 }

@@ -5,32 +5,30 @@ import 'task.dart';
 import 'abort.dart';
 
 abstract class Base {
-  StreamController controller;
+  late StreamController controller;
 
-  StreamSubscription _sub;
+  StreamSubscription? _sub;
 
-  Stream _stream;
+  late Stream _stream;
 
-  AbortSignal _abortSignal;
+  AbortSignal? _abortSignal;
 
-  int _concurrency;
+  int? _concurrency;
 
-  Completer _completer = Completer();
+  final Completer _completer = Completer();
 
-  bool _cancelOnError;
+  bool? _cancelOnError;
 
   @required
-  Iterable<Iterable<Task>> _chunks;
+  late Iterable<Iterable<Task>> _chunks;
 
   Base(List<dynamic> tasks, {
-    AbortSignal abortSignal,
-    int concurrency,
-    bool cancelOnError
+    AbortSignal? abortSignal,
+    int? concurrency,
+    bool? cancelOnError
   })
   {
-    tasks ??= [];
-
-    _cancelOnError = cancelOnError == null ? true : cancelOnError;
+    _cancelOnError = cancelOnError ?? true;
 
     _abortSignal = abortSignal;
 
@@ -38,8 +36,8 @@ abstract class Base {
         concurrency == null || concurrency < 0 ? tasks.length : concurrency;
 
     _chunks = _chunkTasks(
-        tasks.map((Object t) =>
-            _prepareTask(t is Task ? t : Task(t), tasks.indexOf(t))),
+        tasks.map((Object? t) =>
+            _prepareTask(t is Task ? t : Task(t as Function?), tasks.indexOf(t))),
         _concurrency);
 
     _stream = Stream.fromIterable(_chunks);
@@ -56,16 +54,16 @@ abstract class Base {
   }
 
   Task _prepareTask(Task t, Object id) => t
-    ..meta['index'] = t.meta['index'] ?? id
+    ..meta!['index'] = t.meta!['index'] ?? id
     ..setSignal(_abortSignal);
 
-  Iterable<Iterable<Task>> _chunkTasks(Iterable<Task> t, int s)
+  Iterable<Iterable<Task>> _chunkTasks(Iterable<Task> t, int? s)
   {
     if(t.isEmpty || s == 0) {
       return Iterable<Iterable<Task>>.empty();
     }
 
-    return Iterable.generate((t.length / s).ceil(),
+    return Iterable.generate((t.length / s!).ceil(),
       (i) => t.skip(i * s).take(s == 1 ? 1 : i * s + s));
   }
 
@@ -97,18 +95,18 @@ abstract class Base {
 
   void _add(ReflectedFuture r) => _ctrlAdd(r);
 
-  void _error(Object e, [StackTrace s]) => _ctrlAddError(e, s);
+  void _error(Object? e, [StackTrace? s]) => _ctrlAddError(e, s);
 
   void _ctrlAdd(ReflectedFuture r) =>
       !_closed && !_completed ? controller.add(r) : null;
 
-  void _ctrlAddError(Object e, [StackTrace s]) =>
-      !_closed && !_completed ? controller.addError(e, s) : null;
+  void _ctrlAddError(Object? e, [StackTrace? s]) =>
+      !_closed && !_completed ? controller.addError(e!, s) : null;
 
   void _complete([dynamic data]) =>
       !_completed ? _completer.complete(data) : null;
 
-  void _completeError(Object e, [StackTrace s]) =>
+  void _completeError(Object e, [StackTrace? s]) =>
       !_completed ? _completer.completeError(e, s) : null;
 
   void _close() => controller.close();
@@ -129,17 +127,17 @@ abstract class Base {
 }
 
 class ForEach extends Base {
-  ForEach(Iterable<Function> fns, {AbortSignal abortSignal, bool cancelOnError})
+  ForEach(Iterable<Function> fns, {AbortSignal? abortSignal, bool? cancelOnError})
     : super(fns.toList(), abortSignal: abortSignal, concurrency: 1,
       cancelOnError:cancelOnError);
 }
 
 class Chain extends Base {
-  ReflectedFuture _ref;
+  ReflectedFuture? _ref;
 
-  Object _resp;
+  Object? _resp;
 
-  Chain(Iterable<Function> fns, {AbortSignal abortSignal, bool cancelOnError})
+  Chain(Iterable<Function> fns, {AbortSignal? abortSignal, bool? cancelOnError})
     : super(fns.toList(), abortSignal: abortSignal, cancelOnError: cancelOnError,
         concurrency: 1);
 
@@ -156,21 +154,21 @@ class Chain extends Base {
   }
 
   @override
-  void _error(Object e, [StackTrace s]) {
+  void _error(Object? e, [StackTrace? s]) {
     _ref = null;
     _ctrlAddError(e, s);
   }
 
   @override
   Future _runTask(Task t) async =>
-      await t.run(t.meta['index'] == 0 ? null : [_ref?.value], {});
+      await t.run(t.meta!['index'] == 0 ? null : [_ref?.value], {});
 }
 
 class All extends Base {
-  List _resp;
+  final List _resp;
 
-  All(Iterable<Function> fns, {AbortSignal abortSignal, int concurrency,
-    bool cancelOnError})
+  All(Iterable<Function> fns, {AbortSignal? abortSignal, int? concurrency,
+    bool? cancelOnError})
       : _resp = List.filled(fns.length, []),
       super(fns.toList(), abortSignal: abortSignal, concurrency: concurrency,
         cancelOnError:cancelOnError);
@@ -183,19 +181,19 @@ class All extends Base {
 }
 
 class $Map extends Base {
-  List _resp;
+  final List _resp;
 
-  $Map(Iterable<Object> args, Function f, {AbortSignal abortSignal,
-    int concurrency, bool cancelOnError})
+  $Map(Iterable<Object> args, Function f, {AbortSignal? abortSignal,
+    int? concurrency, bool? cancelOnError})
   : _resp = List.filled(args.length, []),
      super(
       ((List _args, Function _f) sync* {
-        for (int i = 0; i < _args.length; i++) {
+        for (var i = 0; i < _args.length; i++) {
           yield () async {
             return await _f(_args[i]);
           };
         }
-      })(args, f)
+      })(args as List<dynamic>, f)
           .toList(),
       abortSignal: abortSignal,
       concurrency: concurrency,
@@ -210,10 +208,10 @@ class $Map extends Base {
 }
 
 class Props extends Base {
-  Map<dynamic, dynamic> _resp;
+  final Map<dynamic, dynamic> _resp;
 
-  Props(Map<Object, dynamic> m, {AbortSignal abortSignal, int concurrency,
-    bool cancelOnError})
+  Props(Map<Object, dynamic> m, {AbortSignal? abortSignal, int? concurrency,
+    bool? cancelOnError})
   : _resp = Map.fromEntries(m.keys.map((k) => MapEntry(k, null))),
     super(
     m.keys.fold(
